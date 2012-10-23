@@ -1,8 +1,12 @@
 #!/bin/bash
 
-if [[ -z "${shome:-}" ]]; then
-  shome="$(cd -P -- "$(dirname -- "${BASH_SOURCE}")/.." && pwd -P)"
+if [[ -z "${bhome:-}" ]]; then
+  bhome="$(basename "$(cd -P -- "$(dirname -- "${BASH_SOURCE}")" && pwd -P)")"
 fi
 
-source "$shome/bin/_jason"
+if [[ -z "${shome:-}" ]]; then
+  shome="$(dirname "$bhome")"
+fi
+
+source "$bhome/_jason"
 set -fue

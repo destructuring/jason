@@ -6,8 +6,12 @@ if [[ "$__meat__" != 'x' ]]; then
 fi
 __meat__='y'
 
+if [[ -z "${bhome:-}" ]]; then
+  bhome="$(cd -P -- "$(dirname -- "${BASH_SOURCE}")" && pwd -P)"
+fi
+
 if [[ -z "${shome:-}" ]]; then
-  shome="$(cd -P -- "$(dirname -- "${BASH_SOURCE}")/.." && pwd -P)"
+  shome="$(dirname "$bhome")"
 fi
 
 function get_started {
@@ -29,7 +33,7 @@ function check_help {
 
 function display_help {
   # taken from shocco
-  grep '^#/' <"$shome/bin/$(basename -- "$0")" | cut -c4-
+  grep '^#/' <"$/bin/$(basename -- "$0")" | cut -c4-
 }
 
 # Exits the script with the last error code.  Servers as a marker in $0 to
@@ -48,17 +52,17 @@ function __MAN__ {
 #     raw ronn-style Markdown
 #     MAN
 function display_man {
-  awk '/^__MAN__/,/^MAN$/ {print}' <"$shome/bin/$(basename -- "$0")" | tail -n +2 | egrep -v '^MAN$'
+  awk '/^__MAN__/,/^MAN$/ {print}' <"$bhome/$(basename -- "$0")" | tail -n +2 | egrep -v '^MAN$'
 }
 
 function display_synopsis {
-  awk '/^#/ && !/^#!/ { print } /^[^#]/ || /^$/ { exit }' <"$shome/bin/$(basename -- "$0")" | cut -c3-
+  awk '/^#/ && !/^#!/ { print } /^[^#]/ || /^$/ { exit }' <"$bhome/$(basename -- "$0")" | cut -c3-
 }
 
 function which_library {
   local library="$1"; shift
-  if [[ -r "$shome/bin/_$library" ]]; then
-    echo "$shome/bin/_$library"
+  if [[ -r "$bhome/_$library" ]]; then
+    echo "$bhome/_$library"
   elif [[ -r "$shome/.$library/bin/_profile" ]]; then
     echo "$shome/.$library/bin/_profile"
   elif [[ -r "$shome/.$library/.profile" ]]; then
@@ -138,7 +142,7 @@ function _main {
 
   configure_logging
   
-  PATH="$shome/bin:$PATH"
+  PATH="$bhome:$PATH"
 }
 
 _main "$@"

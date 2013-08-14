@@ -3822,11 +3822,12 @@ else
 
   # note: not using the constant variables here (e.g. for ConsoleAppender) so
   # that those perusing the code can have a working example
-  logger_setLevel ${__LOG4SH_LEVEL_ERROR_STR}
-  logger_addAppender stdout
-  appender_setType stdout ConsoleAppender
-  appender_setLayout stdout PatternLayout
-  appender_setPattern stdout '%-4r [%t] %-5p %c %x - %m%n'
+  logger_setLevel INFO # ${__LOG4SH_LEVEL_ERROR_STR}
+  logger_addAppender stderr
+  appender_setType stderr ConsoleAppender
+  appender_setLayout stderr PatternLayout
+  appender_setPattern stderr '%-5p %c %x - %m%n'
+  appender_activateOptions stderr
 fi
 
 # restore the previous set of shell flags

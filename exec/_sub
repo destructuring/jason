@@ -9,9 +9,9 @@ fi
 if [[ "$(type -t main)" != "function" ]]; then
 function main {
   if [[ "$#" > 0 ]]; then
-    logger_fatal "Command $sub_base $1 not implemented"
+    echo "Command $sub_base $1 not implemented" 1>&2
   else
-    logger_fatal "Command $sub_base not implemented"
+    echo "Command $sub_base not implemented" 1>&2
   fi
   exit 1
 }
@@ -20,7 +20,7 @@ fi
 function sub {
   local bsource="$1"; shift
   local sub_base="$(basename "$bsource")"
-  local bsource_cmd="$shome/libexec/${sub_base}"
+  local bsource_cmd="$(type -P "${sub_base}")"
 
   if [[ "$bsource_cmd" = "$bsource" ]]; then
     FLAGS_SUB="$FLAGS_TRUE"
@@ -30,11 +30,7 @@ function sub {
 
   if [[ "$#" > 0 ]]; then
     if [[ ! "$1" =~ ^- ]]; then
-      local sub_cmd="$shome/libexec/${sub_base}-$1"
-      
-      if [[ ! -x "$sub_cmd" ]]; then
-        sub_cmd="$(type -P "${sub_base}-$1" || true)"
-      fi
+      local sub_cmd="$(type -P "${sub_base}-$1" || true)"
 
       if [[ -x "$sub_cmd" ]]; then
         shift

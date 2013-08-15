@@ -10,7 +10,7 @@ function check_help {
 
 function require {
   if [[ "$#" > 0 ]]; then
-    local nm_lib="$_1"; shift
+    local nm_lib="_${1#_}"; shift
     source "$nm_lib" "$@"
   fi
 }

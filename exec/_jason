@@ -9,7 +9,10 @@ function check_help {
 }
 
 function require {
-  source "$@"
+  if [[ "$#" > 0 ]]; then
+    local nm_lib="$_1"; shift
+    source "$nm_lib" "$@"
+  fi
 }
 
 function parse_command_line {

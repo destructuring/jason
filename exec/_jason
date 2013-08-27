@@ -35,26 +35,6 @@ function parse_command_line {
   return 0
 }
 
-function configure_logging {
-  if [[ -n "${NO_LOG4SH:-}" ]]; then
-    return 0
-  fi
-
-  LOG4SH_CONFIGURATION=none require _log4sh
-
-  log4sh_resetConfiguration
-
-  # set the global logging level to INFO
-  logger_setLevel INFO
-
-  # add and configure a FileAppender that outputs to STDERR, and activate the
-  # configuration
-  logger_addAppender stderr
-  appender_setType stderr FileAppender
-  appender_file_setFile stderr STDERR
-  appender_activateOptions stderr
-}
-
 function ryaml {
   ruby -ryaml -e 'def ps x; unless x.nil?; puts (x.class == String || x.class == Fixnum) ? x : x.to_yaml; end; end; ps ARGV[1..-1].inject(YAML.load(File.read(ARGV[0]))) {|acc, key| acc[acc.class == Array ? key.to_i : (m = key.match(/^:(.*)$/); m ? m[1].to_sym : key)] }' "$@" 2>&-
 }
@@ -129,8 +109,36 @@ function _main {
   __jason__='y'
 
   require _shflags
+}
 
-  configure_logging
+function logger_base {
+  local level="$1"; shift
+
+  printf '[%s] %s\r\n' "$level" "$*"
+}
+
+function logger_trace {
+  logger_base "TRACE" "$@"
+}
+
+function logger_debug {
+  logger_base "DEBUG" "$@"
+}
+
+function logger_info {
+  logger_base "INFO" "$@"
+}
+
+function logger_warn {
+  logger_base "WARN" "$@"
+}
+
+function logger_error {
+  logger_base "ERROR" "$@"
+}
+
+function logger_fatal {
+  logger_base "FATAL" "$@"
 }
 
 _main "$@"

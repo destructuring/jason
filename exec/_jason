@@ -1,5 +1,13 @@
 #!/bin/bash
 
+function display_help {
+  flags_help
+  echo
+
+  # taken from shocco
+  grep '^#/' <"$shome/$(basename $(dirname -- "$0"))/$(basename -- "$0")" | cut -c4-
+}
+
 function check_help {
   # taken from shocco
   if expr -- "$*" : ".*--help" >/dev/null; then

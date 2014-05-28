@@ -5,6 +5,7 @@ function display_help {
   echo
 
   # taken from shocco
+  local shome="$(unset CDPATH; cd -P -- "$(dirname -- "$0")/.." && pwd -P)"
   grep '^#/' <"$shome/$(basename $(dirname -- "$0"))/$(basename -- "$0")" | cut -c4-
 }
 
@@ -60,6 +61,23 @@ function runmany {
   else
     echo "$@"
   fi | xargs -P $cpu -n $args -- bash -c "$cmd" ""
+}
+
+function envssh {
+  local cmd_env="env"
+
+  while [[ "$#" != 0 ]]; do
+    if [[ "${1%%=*}" != "$1" ]]; then
+      local nm_env="${1%%=*}"
+      local str_env="$(printf "%q" "${1#*=}")"
+      cmd_env="$cmd_env ${nm_env}=${str_env}"
+      shift
+    else
+      break
+    fi
+  done
+
+  exec ssh "$@" $cmd_env "bash -s"
 }
 
 function mark_log {
